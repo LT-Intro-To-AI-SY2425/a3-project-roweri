@@ -1,3 +1,7 @@
+https://docs.google.com/document/d/1MJ0oGvB85SUGAydKCGAytuTJ0dLup6dz71qI25mqf8A/edit?tab=t.0
+
+
+
 # Assignment 3 part 2 - Create your own chatbot
 
 In assignment 3 you created a chatbot from a movie database. In this group project (no more than 4 people in a group, or you can work individually) you are tasked to create your own chatbot for something that is more relavant to you. You can use our solution as a starting point for your own chatbot, or you could do something completely different.
