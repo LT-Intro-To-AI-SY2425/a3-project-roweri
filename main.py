@@ -9,3 +9,14 @@ r = requests.get(url)
 data = r.json()
 
 print(data)
+
+
+
+
+prices
+
+Hotdog: 1.50
+
+Hamburger: 2.00
+
+Chips: 1.00
