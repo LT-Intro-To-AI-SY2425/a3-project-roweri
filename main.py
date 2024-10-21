@@ -32,6 +32,8 @@ def change_by_range(day1: str, day2: str):
 def buy_sell_hold():
     currentDate = data["Meta Data"]["3. Last Refreshed"]
     
+def buy_action():
+    print("see you later alligator")
 
 pa_list: List[Tuple[List[str], Callable[[List[str]], List[Any]]]] = [
     (str.split("what was the volume on _"), get_volume),
