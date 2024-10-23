@@ -4,30 +4,41 @@ from datetime import datetime, timedelta
 import requests
 from typing import List, Tuple, Callable, Any
 from match import match
+import os
+import json
+
 # replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
-ticker = "IBM"
-url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&interval=5min&apikey=Q9PQI5FO67EYWG2P"
-r = requests.get(url)
-data = r.json()
+#ticker = "IBM"
+#url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&interval=5min&apikey=Q9PQI5FO67EYWG2P"
+#r = requests.get(url)
 
-def get_open(day: str):
-    return data[day]["1. open"]
+#json_object = json.dumps(data, indent=4)
+ 
+# Writing to sample.json
+#with open("sample.json", "w") as outfile:
+#    outfile.write(json_object)
 
-def get_high(day: str):
-    return data[day]["2. high"]
+with open('sample.json', 'r') as file:
+    data = json.load(file)
+print(data)
+def get_open(day):
+    return data["Time Series (Daily)"][day[0]]["1. open"]
 
-def get_low(day: str):
-    return data[day]["3. low"]
+def get_high(day):
+    return data["Time Series (Daily)"][day[0]]["2. high"]
 
-def get_close(day: str):
-    return data[day]["4. close"]
+def get_low(day):
+    return data["Time Series (Daily)"][day[0]]["3. low"]
 
-def get_volume(day: str):
-    print(data[day[0]])
-    return data[day[0]]["5. volume"] if day[0] in data else None
+def get_close(day):
+    return data["Time Series (Daily)"][day[0]]["4. close"]
 
-def change_by_range(day1: str, day2: str):
-    return abs((get_open(day1)) - (get_open(day2)))
+def get_volume(day):
+    print(type(data["Time Series (Daily)"][day[0]]["5. volume"]), data["Time Series (Daily)"][day[0]]["5. volume"])
+    return data["Time Series (Daily)"][day[0]]["5. volume"]
+
+def change_by_range(day1, day2):
+    return abs((get_open(day1[0])) - (get_open(day2[0])))
 
 def buy_sell_hold():
     def get_date_x_days_ago(date_string, x):
@@ -82,11 +93,7 @@ def search_pa_list(src: List[str]) -> List[str]:
     for pattern, actual in pa_list:
         value = match(pattern, src)
         if value != None:
-            result = actual(value)
-            if result:
-                return result
-            else:
-                return ["No answers"]
+            return actual(value)
     return ["I don't understand"]
 
 
@@ -100,6 +107,7 @@ def query_loop() -> None:
             print()
             query = input("Your query? ").replace("?", "").lower().split()
             answers = search_pa_list(query)
+            print(answers)
             for ans in answers:
                 print(ans)
 
