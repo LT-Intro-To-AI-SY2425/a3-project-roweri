@@ -20,6 +20,8 @@ import json
 
 with open('sample.json', 'r') as file:
     data = json.load(file)
+
+    
 def get_open(day):
     return data["Time Series (Daily)"][day[0]]["1. open"] if day[0] in data["Time Series (Daily)"] else None
 
