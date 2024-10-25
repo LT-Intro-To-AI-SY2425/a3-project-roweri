@@ -20,27 +20,28 @@ import json
 
 with open('sample.json', 'r') as file:
     data = json.load(file)
-print(data)
 def get_open(day):
-    return data["Time Series (Daily)"][day[0]]["1. open"]
+    return data["Time Series (Daily)"][day[0]]["1. open"] if day[0] in data["Time Series (Daily)"] else None
 
 def get_high(day):
-    return data["Time Series (Daily)"][day[0]]["2. high"]
+    return data["Time Series (Daily)"][day[0]]["2. high"] if day[0] in data["Time Series (Daily)"] else None
 
 def get_low(day):
-    return data["Time Series (Daily)"][day[0]]["3. low"]
+    return data["Time Series (Daily)"][day[0]]["3. low"] if day[0] in data["Time Series (Daily)"] else None
 
 def get_close(day):
-    return data["Time Series (Daily)"][day[0]]["4. close"]
+    return data["Time Series (Daily)"][day[0]]["4. close"] if day[0] in data["Time Series (Daily)"] else None
 
 def get_volume(day):
-    print(type(data["Time Series (Daily)"][day[0]]["5. volume"]), data["Time Series (Daily)"][day[0]]["5. volume"])
-    return data["Time Series (Daily)"][day[0]]["5. volume"]
+    #print(type(data["Time Series (Daily)"][day[0]]["5. volume"]), data["Time Series (Daily)"][day[0]]["5. volume"])
+    return data["Time Series (Daily)"][day[0]]["5. volume"] if day[0] in data["Time Series (Daily)"] else None
 
-def change_by_range(day1, day2):
-    return abs((get_open(day1[0])) - (get_open(day2[0])))
+def change_by_range(values):
+    day1 = values[0]
+    day2 = values[1]
+    return abs((float(get_open([day1]))) - float(get_open([day2]))) if get_open([day2]) != None and get_open([day1]) != None else None
 
-def buy_sell_hold():
+def buy_sell_hold(values):
     def get_date_x_days_ago(date_string, x):
 
         date_format = '%Y-%m-%d'
@@ -53,17 +54,24 @@ def buy_sell_hold():
 
 
     currentDate = data["Meta Data"]["3. Last Refreshed"]
-    currentOpen = get_open(currentDate)
+    currentOpen = get_open([currentDate])
     
-    previousDate = get_date_x_days_ago(currentDate, 5)
+    previousDate = get_date_x_days_ago(currentDate, int(values[0]))
 
-    while previousDate not in data:
-        previousDate = get_date_x_days_ago(previousDate, 1)
+    max = 5
+    c = 0
+
+    while previousDate not in data["Time Series (Daily)"]:
+        previousDate = get_date_x_days_ago(previousDate, 1).split(" ")[0]
+        c += 1
+        if c == 10: return None
     
 
-    previousOpen = get_open(previousDate)
+    previousOpen = get_open([previousDate])
 
-    percentChange = (currentOpen - previousOpen) / previousOpen * 100
+    if currentOpen == None or previousOpen == None: return None
+
+    percentChange = (float(currentOpen) - float(previousOpen)) / float(previousOpen) * 100
 
     if percentChange >= 3.0:
         return "Sell!"
@@ -84,7 +92,7 @@ pa_list: List[Tuple[List[str], Callable[[List[str]], List[Any]]]] = [
     # note there are two valid patterns here two different ways to ask for the director
     # of a movie
     (str.split("what was the change between _ and _"), change_by_range),
-    (str.split("what should I do"), buy_sell_hold),
+    (str.split("what should i do looking _ days ago"), buy_sell_hold),
     (["bye"], bye_action),
 ]
 
@@ -93,7 +101,10 @@ def search_pa_list(src: List[str]) -> List[str]:
     for pattern, actual in pa_list:
         value = match(pattern, src)
         if value != None:
-            return actual(value)
+            pd = actual(value)
+            if pd != None:
+                return [pd]
+            return ["I Dont Know"]
     return ["I don't understand"]
 
 
@@ -107,7 +118,6 @@ def query_loop() -> None:
             print()
             query = input("Your query? ").replace("?", "").lower().split()
             answers = search_pa_list(query)
-            print(answers)
             for ans in answers:
                 print(ans)
 
